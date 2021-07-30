@@ -191,7 +191,7 @@ namespace Arpsis.Programs.Migrator
                 Console.WriteLine($"Usuarios encontrados {total}");
 
                 var userProcess = users
-                        .OrderBy(u => u.UserId)
+                        .OrderBy(u => u.Id)
                         .Take(Constants.ItemPerCall)
                         .ToList();
 
@@ -209,7 +209,7 @@ namespace Arpsis.Programs.Migrator
 
                     userProcess = users
                         .Where(u=> !u.Processed)
-                        .OrderBy(u => u.UserId)
+                        .OrderBy(u => u.Id)
                         .Take(Constants.ItemPerCall)
                         .ToList();
                 };

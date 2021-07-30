@@ -55,7 +55,7 @@ namespace Arpsis.Programs.Migrator
                 var itemPerCall =  1;
 
                 var userProcess = users
-                       .OrderBy(u => u.UserId)
+                       .OrderBy(u => u.Id)
                        .Take(itemPerCall)
                        .ToList();
 
@@ -87,7 +87,7 @@ namespace Arpsis.Programs.Migrator
 
                             var userG = context
                                 .Persona
-                                .FirstOrDefault(u => u.UserId == userProces.UserId);
+                                .FirstOrDefault(u => u.Id == userProces.Id);
 
                             var userMoodle = result.FirstOrDefault(u => u.username == userG.Identificacion);
                             if (userMoodle != null)
@@ -112,7 +112,7 @@ namespace Arpsis.Programs.Migrator
 
                     userProcess = users
                         .Where(u => !u.Processed)
-                        .OrderBy(u => u.UserId)
+                        .OrderBy(u => u.Id)
                         .Take(itemPerCall)
                         .ToList();
 
@@ -192,7 +192,7 @@ namespace Arpsis.Programs.Migrator
                 var itemPerCall = 1;
 
                 var userProcess = users
-                       .OrderBy(u => u.UserId)
+                       .OrderBy(u => u.Id)
                        .Take(itemPerCall)
                        .ToList();
 
@@ -216,7 +216,7 @@ namespace Arpsis.Programs.Migrator
 
                             var userG = context
                                 .Persona
-                                .FirstOrDefault(u => u.UserId == userProces.UserId);
+                                .FirstOrDefault(u => u.Id == userProces.Id);
 
                             var userMoodle = result.users.FirstOrDefault(u => u.username == userG.Identificacion);
                             if (userMoodle != null)
@@ -242,7 +242,7 @@ namespace Arpsis.Programs.Migrator
 
                     userProcess = users
                         .Where(u => !u.Processed)
-                        .OrderBy(u => u.UserId)
+                        .OrderBy(u => u.Id)
                         .Take(itemPerCall)
                         .ToList();
 

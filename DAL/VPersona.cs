@@ -11,8 +11,8 @@ namespace Arpsis.Programs.Migrator.DAL
     [Table("v_persona")]
     public class VPersona
     {
-        [Column("user_id"), Key]
-        public int UserId { get; set; }
+        [Column("id"), Key]
+        public int Id { get; set; }
 
         [Column("carrera")]
         public string Carrera { get; set; }
@@ -43,7 +43,7 @@ namespace Arpsis.Programs.Migrator.DAL
 
         public override string ToString()
         {
-            return $"{UserId}-{Identificacion}-{Nombres}-{Email}-{CodigoAula}"; 
+            return $"{Id}-{Identificacion}-{Nombres}-{Email}-{CodigoAula}"; 
         }
     }
 }

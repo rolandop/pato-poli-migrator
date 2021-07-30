@@ -11,8 +11,8 @@ namespace Arpsis.Programs.Migrator.DAL
     [Table("persona")]
     public class Persona
     {
-        [Column("user_id"), Key]
-        public int UserId { get; set; }
+        [Column("id"), Key]
+        public int Id { get; set; }
 
         [Column("identificacion")]
         [MaxLength(50)]
