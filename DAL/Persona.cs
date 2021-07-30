@@ -8,8 +8,8 @@ using System.Threading.Tasks;
 
 namespace Arpsis.Programs.Migrator.DAL
 {
-    [Table("usuario_g")]
-    public class UsuarioG
+    [Table("persona")]
+    public class Persona
     {
         [Column("user_id"), Key]
         public int UserId { get; set; }
@@ -19,6 +19,9 @@ namespace Arpsis.Programs.Migrator.DAL
         public string Identificacion { get; set; }       
 
         [Column("bandera")]
-        public int Bandera { get; set; }
+        public int? Bandera { get; set; }
+
+        [Column("id_curso")]
+        public int? IdCurso { get; set; }
     }
 }

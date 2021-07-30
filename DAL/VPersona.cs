@@ -30,26 +30,20 @@ namespace Arpsis.Programs.Migrator.DAL
         public string Email { get; set; }
 
         [Column("bandera")]
-        public int Bandera { get; set; }
+        public int? Bandera { get; set; }       
 
-        [Column("ciudad_sede")]
-        public string CiudadSede { get; set; }
+        [Column("codigo_aula")]
+        public string CodigoAula { get; set; }
 
-        [Column("discapacidad")]
-        public string Discapacidad { get; set; }
-
-        [Column("pais_nacionalidad")]
-        public string PaisNacionalidad { get; set; }
-
-        [Column("aula")]
-        public string Aula { get; set; }
+        [Column("id_curso")]
+        public int? IdCurso { get; set; }
 
         [NotMapped]
         public bool Processed { get; set; }
 
         public override string ToString()
         {
-            return $"{Carrera}-{CiudadSede}-{Discapacidad}-{PaisNacionalidad}-{Aula}"; 
+            return $"{UserId}-{Identificacion}-{Nombres}-{Email}-{CodigoAula}"; 
         }
     }
 }

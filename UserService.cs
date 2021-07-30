@@ -86,7 +86,7 @@ namespace Arpsis.Programs.Migrator
                             Console.WriteLine($"Actualizando bandera {userProces.Identificacion} - {++actual}/{total}");
 
                             var userG = context
-                                .UsuarioGs
+                                .Persona
                                 .FirstOrDefault(u => u.UserId == userProces.UserId);
 
                             var userMoodle = result.FirstOrDefault(u => u.username == userG.Identificacion);
@@ -215,7 +215,7 @@ namespace Arpsis.Programs.Migrator
                             Console.WriteLine($"Actualizando bandera {userProces.Identificacion} - {++actual}/{total}");
 
                             var userG = context
-                                .UsuarioGs
+                                .Persona
                                 .FirstOrDefault(u => u.UserId == userProces.UserId);
 
                             var userMoodle = result.users.FirstOrDefault(u => u.username == userG.Identificacion);

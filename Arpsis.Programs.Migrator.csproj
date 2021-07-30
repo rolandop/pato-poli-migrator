@@ -85,8 +85,7 @@
   <ItemGroup>
     <Compile Include="Constants.cs" />
     <Compile Include="DAL\ContextDatabase.cs" />
-    <Compile Include="DAL\UsuarioG.cs" />
-    <Compile Include="DAL\VDistributivo.cs" />
+    <Compile Include="DAL\Persona.cs" />
     <Compile Include="DAL\VPersona.cs" />
     <Compile Include="LoginService.cs" />
     <Compile Include="Program.cs" />

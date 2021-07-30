@@ -43,42 +43,43 @@ namespace Arpsis.Programs.Migrator
 
             using (var context = new ContextDatabase())
             {
-                
-                var courses = context
-                        .VDistributivos
-                        .ToList();
 
+                var courseGroups = context
+                           .VPersonas
+                           .Where(p => p.Bandera > 0
+                               && p.IdCurso > 0)
+                           .GroupBy(g => g.CodigoAula)
+                           .Select(r => new {
+                               Shorname = r.Key,
+                               Users = r.ToList()
+                           })
+                           .ToList();
 
-                foreach (var course in courses)
+                if (courseGroups.Count() > 0)
                 {
-                    var users = context
-                        .VPersonas
-                        .Where(p => p.Bandera > 0
-                            && p.Aula == course.Aula)
-                        .ToList();
-
-                    Console.WriteLine($"Curso: {course.Aula}");
-                    Console.WriteLine($"Ciudad: {course.CiudadSede}");
-                    Console.WriteLine($"Carrera: {course.Carrera}");
-                    Console.WriteLine($"Capacidad: {course.Capacidad}");
-                    Console.WriteLine($"Utilizado: {course.Utilizado}");
-                    Console.WriteLine($"Acceso: {course.Acceso}");
-                    Console.WriteLine($"Total Discapacidatos: {users.Where(u=> u.Discapacidad != "NINGUNA").Count()}");
-                    Console.WriteLine($"Total Extranjeros: {users.Where(u => u.PaisNacionalidad != "ECUADOR").Count()}");
-                    Console.WriteLine($"====================================");
-
-                    Console.WriteLine($"N°\tIDENTIFICACIÓN\tEMAIL           \tCIUDAD\tCARRERA        \tNACIONALIDAD \tDISCAPACIDAD");
-                    var i = 1;
-                    foreach (var user in users)
+                    foreach (var course in courseGroups)
                     {
-                        Console.WriteLine($"{i++}\t{user.Identificacion}\t{user.Email}\t{user.CiudadSede}\t{user.Carrera}\t{user.PaisNacionalidad} \t{user.Discapacidad}");
+
+                        Console.WriteLine($"Curso: {course.Shorname}");
+                        Console.WriteLine($"Carrera: {course.Users.FirstOrDefault().Carrera}");
+                        Console.WriteLine($"Utilizado: {course.Users.Count}");
+                        Console.WriteLine($"====================================");
+                        Console.WriteLine($"N°\tIDENTIFICACIÓN\tEMAIL           \tCARRERA");
+                        var i = 1;
+                        foreach (var user in course.Users)
+                        {
+                            Console.WriteLine($"{i++}\t{user.Identificacion}\t{user.Email}\t{user.Carrera}");
+                        }
+
+                        Console.WriteLine($"Presione una tecla para continuar...");
+                        Console.ReadKey();
+                        Console.WriteLine();
                     }
-
-                    Console.WriteLine($"Presione una tecla para continuar...");
-                    Console.ReadKey();
-                    Console.WriteLine();
                 }
-
+                else
+                {
+                    Console.WriteLine($"No existen cursos asignados");
+                }
             }
         }
 
@@ -93,109 +94,67 @@ namespace Arpsis.Programs.Migrator
                 {
                     try
                     {
-                        var users = context
+                        var courseGroups = context
                             .VPersonas
                             .Where(p => p.Bandera > 0
-                                && (p.Aula == null || p.Aula == ""))
+                                && (p.IdCurso == null || p.IdCurso == 0))
+                            .GroupBy(g=> g.CodigoAula)
+                            .Select(r=> new { 
+                                Shorname = r.Key,
+                                Users = r.ToList()
+                            })
                             .ToList();
 
-                        var totalUsers = users.Count;
-                        Console.WriteLine($"Usuarios encontrados {totalUsers}");
+                        var totalGroups = courseGroups.Count;
+                        Console.WriteLine($"Cursos encontrados {totalGroups}");
 
-                        var distributivo = context
-                                .VDistributivos
-                                .ToList();
-
-                        var courseId = 1;
-                        distributivo.ForEach(c => c.Bandera = courseId++);
-
-                        var totalCourses = distributivo.Count;
-                        Console.WriteLine($"Cursos encontrados {totalCourses}");
-
-
-                        //Procesa extranjeros equitativamente
-
-                        foreach (var user in users.Where(u => u.PaisNacionalidad != "ECUADOR" && string.IsNullOrWhiteSpace(u.Aula)))
-                        {
-                            var course = distributivo
-                                            .Where(c => c.Carrera == user.Carrera
-                                                        && c.CiudadSede == user.CiudadSede
-                                                        && c.Capacidad > c.Utilizado)
-                                            .OrderBy(c => c.Utilizado)
-                                            .FirstOrDefault();
-
-                            if (course != null)
-                            {
-                                user.Aula = course.Aula;
-                                course.Utilizado++;
-                            }
-                        }
-
-                        //Procesa primero las aulas con personas con algún tipo de discapacidad
-
-                        foreach (var user in users.Where(u => u.Discapacidad != "NINGUNA"))
-                        {
-                            var course = distributivo
-                                            .Where(c => c.Carrera == user.Carrera
-                                                        && c.CiudadSede == user.CiudadSede
-                                                        && c.Capacidad > c.Utilizado
-                                                        && c.Acceso == 1)
-                                            .OrderBy(c => c.Utilizado)
-                                            .FirstOrDefault();
-
-                            if (course != null)
-                            {
-                                user.Aula = course.Aula;
-                                course.Utilizado++;
-                            }
-                        }
-
-                        //Procesa resto de estudiantes
-
-                        foreach (var user in users.Where(u => string.IsNullOrWhiteSpace(u.Aula)))
-                        {
-                            var course = distributivo
-                                            .Where(c => c.Carrera == user.Carrera
-                                                        && c.CiudadSede == user.CiudadSede
-                                                        && c.Capacidad > c.Utilizado)
-                                            .OrderBy(c => c.Utilizado)
-                                            .FirstOrDefault();
-
-                            if (course != null)
-                            {
-                                user.Aula = course.Aula;
-                                course.Utilizado++;
-                            }
-                        }
-
-                        //Mapeo de cursos de moodle vs distributivo
+                        //Obtiene cursos actuales para validar si ya existe alguno creado
                         var courses = GetCourses();
 
-                        distributivo.ForEach(d =>
-                            d.Bandera = courses
-                                .FirstOrDefault(c=> c.shortname.ToUpper().Equals(d.Aula.ToUpper().Trim()))?.id ?? 0
-                        );
+                        foreach (var group in courseGroups)
+                        {
+                            //Busca el curso en la lista de cursos existentes
+                            var course = 
+                                    courses
+                                        .FirstOrDefault(c => c.shortname.ToUpper() == group.Shorname.ToUpper());
 
-                        //Agisna a los estudiantes a los cursos en moodle
-                        users
-                            .Join(courses,
-                                u => u.Aula,
-                                c => c.shortname,
-                                (u, c) => new { 
-                                    user = u,
-                                    course = c
-                                })
-                            .GroupBy(u => u.course.id)
-                            .ToList()
-                            .ForEach(g=> EnrolUsers(
-                                g.Select(u2 => new EnrolUserRequestModel{
+                            //Si no encuentra el curso lo crea en moodle
+                            if (course == null)
+                            {
+                                var courseResponseModel = CreateCourses(new List<CreateCourseRequestModel> { 
+                                    new CreateCourseRequestModel {
+                                        shortname = group.Shorname,
+                                        fullname = group.Shorname
+                                    }
+                                });
+
+                                if (courseResponseModel.Any())
+                                {
+                                    course = courseResponseModel.FirstOrDefault();
+                                }
+                            }
+                            if (course == null)
+                            {
+                                Console.WriteLine($"No se pudo crear curso {group.Shorname}");
+                                continue;
+                            }
+
+                            EnrolUsers(
+                                group.Users.Select(u => new EnrolUserRequestModel
+                                {
                                     roleid = RoleId,
-                                    courseid = g.Key,
-                                    userid = u2.user.Bandera,
-                                    shortname = u2.user.Aula
-                                }).ToList())
-                            );
+                                    courseid = course.id,
+                                    userid = u.Bandera ?? 0,
+                                    shortname = course.shortname
+                                }).ToList());
 
+                            var ids = group.Users.Select(u => u.Bandera).ToList();
+                            var users = context.Persona.Where(u=> ids.Contains(u.Bandera)).ToList();
+                            users.ForEach(u=> {
+                                u.IdCurso = course.id;
+                            });
+                        }
+                  
                         context.SaveChanges();
 
                         tran.Commit();
@@ -241,7 +200,7 @@ namespace Arpsis.Programs.Migrator
                     EnrolUsers(
                         userProcess.Select(u=> new EnrolUserRequestModel {
                             roleid = roleid,
-                            userid = u.Bandera,
+                            userid = u.Bandera ?? 0,
                             courseid = courseid
                         }).ToList()
                     );
@@ -342,6 +301,49 @@ namespace Arpsis.Programs.Migrator
             }
             return new List<CourseResponseModel>();
         }
+
+
+        /// <summary>
+        /// Creación de Cursos
+        /// </summary>
+        /// <returns></returns>
+        private List<CourseResponseModel> CreateCourses(List<CreateCourseRequestModel> courses)
+        {
+            var client = new RestClient(Constants.BaseUrl);
+            client.Timeout = -1;
+            var request = new
+                RestRequest($"webservice/rest/server.php?wstoken={Token}&wsfunction=core_course_create_courses&moodlewsrestformat=json",
+                            Method.POST);
+
+            request.AddHeader("Content-Type", "application/x-www-form-urlencoded");
+
+            var i = 0;
+            foreach (var course in courses)
+            {
+                request.AddParameter($"courses[{i}][fullname]", course.fullname);
+                request.AddParameter($"courses[{i}][shortname]", course.shortname);
+                request.AddParameter($"courses[{i}][categoryid]", 1);
+                i++;
+            }
+
+            var response = client.Execute(request);
+            if (response.StatusCode == System.Net.HttpStatusCode.OK)
+            {
+                if (response.Content.IndexOf("exception") > -1)
+                {
+                    Console.WriteLine("Error al procesar llamada");
+                    Console.WriteLine(response.Content);
+                }
+
+                return JsonConvert.DeserializeObject<List<CourseResponseModel>>(response.Content);
+            }
+            else
+            {
+                Console.WriteLine("Error. No se pudo crear curso");
+                Console.WriteLine(response.Content);
+            }
+            return new List<CourseResponseModel>();
+        }
     }
 
     public class EnrolUserRequestModel {
@@ -354,6 +356,12 @@ namespace Arpsis.Programs.Migrator
     public class CourseResponseModel
     {
         public int id { get; set; }
+        public string fullname { get; set; }
+        public string shortname { get; set; }
+    }
+
+    public class CreateCourseRequestModel
+    {        
         public string fullname { get; set; }
         public string shortname { get; set; }
     }

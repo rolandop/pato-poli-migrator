@@ -23,7 +23,6 @@ namespace Arpsis.Programs.Migrator.DAL
         }
 
         public DbSet<VPersona> VPersonas { get; set; }
-        public DbSet<UsuarioG> UsuarioGs { get; set; }
-        public DbSet<VDistributivo> VDistributivos { get; set; }
+        public DbSet<Persona> Persona { get; set; }        
     }
 }
