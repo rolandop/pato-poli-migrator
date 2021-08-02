@@ -18,8 +18,8 @@ namespace Arpsis.Programs.Migrator.DAL
         [MaxLength(50)]
         public string Identificacion { get; set; }       
 
-        [Column("bandera")]
-        public int? Bandera { get; set; }
+        [Column("id_usuario_moodle")]
+        public int? IdUsuarioMoodle { get; set; }
 
         [Column("id_curso")]
         public int? IdCurso { get; set; }

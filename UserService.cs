@@ -44,7 +44,7 @@ namespace Arpsis.Programs.Migrator
             {
                 var users = context
                         .VPersonas
-                        .Where(p=> p.Bandera == 0)
+                        .Where(p=> p.IdUsuarioMoodle == 0)
                         .ToList();
 
                 var actual = 0;
@@ -92,7 +92,7 @@ namespace Arpsis.Programs.Migrator
                             var userMoodle = result.FirstOrDefault(u => u.username == userG.Identificacion);
                             if (userMoodle != null)
                             {
-                                userG.Bandera = userMoodle.id;
+                                userG.IdUsuarioMoodle = userMoodle.id;
                             }
                             userProces.Processed = true;
                         }
@@ -181,7 +181,7 @@ namespace Arpsis.Programs.Migrator
             {
                 var users = context
                         .VPersonas
-                        .Where(p => p.Bandera == 0)
+                        .Where(p => p.IdUsuarioMoodle == 0)
                         .ToList();
 
                 var actual = 0;
@@ -222,7 +222,7 @@ namespace Arpsis.Programs.Migrator
                             if (userMoodle != null)
                             {
                                 Console.WriteLine(JsonConvert.SerializeObject(userMoodle));
-                                userG.Bandera = userMoodle.id;
+                                userG.IdUsuarioMoodle = userMoodle.id;
                             }
                             userProces.Processed = true;
                         }

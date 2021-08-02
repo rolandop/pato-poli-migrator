@@ -46,8 +46,8 @@ namespace Arpsis.Programs.Migrator
 
                 var courseGroups = context
                            .VPersonas
-                           .Where(p => p.Bandera > 0
-                               && p.IdCurso > 0)
+                           .Where(p => p.IdUsuarioMoodle > 0
+                               && p.IdCursoMoodle > 0)
                            .GroupBy(g => g.CodigoAula)
                            .Select(r => new {
                                Shorname = r.Key,
@@ -96,8 +96,8 @@ namespace Arpsis.Programs.Migrator
                     {
                         var courseGroups = context
                             .VPersonas
-                            .Where(p => p.Bandera > 0
-                                && (p.IdCurso == null || p.IdCurso == 0))
+                            .Where(p => p.IdUsuarioMoodle > 0
+                                && (p.IdCursoMoodle == null || p.IdCursoMoodle == 0))
                             .GroupBy(g=> g.CodigoAula)
                             .Select(r=> new { 
                                 Shorname = r.Key,
@@ -144,12 +144,12 @@ namespace Arpsis.Programs.Migrator
                                 {
                                     roleid = RoleId,
                                     courseid = course.id,
-                                    userid = u.Bandera ?? 0,
+                                    userid = u.IdUsuarioMoodle ?? 0,
                                     shortname = course.shortname
                                 }).ToList());
 
-                            var ids = group.Users.Select(u => u.Bandera).ToList();
-                            var users = context.Persona.Where(u=> ids.Contains(u.Bandera)).ToList();
+                            var ids = group.Users.Select(u => u.IdUsuarioMoodle).ToList();
+                            var users = context.Persona.Where(u=> ids.Contains(u.IdUsuarioMoodle)).ToList();
                             users.ForEach(u=> {
                                 u.IdCurso = course.id;
                             });
@@ -183,7 +183,7 @@ namespace Arpsis.Programs.Migrator
             {
                 var users = context
                         .VPersonas
-                        .Where(p=> p.Bandera > 0)
+                        .Where(p=> p.IdUsuarioMoodle > 0)
                         .ToList();
                 
                 var total = users.Count;
@@ -200,7 +200,7 @@ namespace Arpsis.Programs.Migrator
                     EnrolUsers(
                         userProcess.Select(u=> new EnrolUserRequestModel {
                             roleid = roleid,
-                            userid = u.Bandera ?? 0,
+                            userid = u.IdUsuarioMoodle ?? 0,
                             courseid = courseid
                         }).ToList()
                     );

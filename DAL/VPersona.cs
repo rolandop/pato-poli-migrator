@@ -29,14 +29,14 @@ namespace Arpsis.Programs.Migrator.DAL
         [Column("email")]
         public string Email { get; set; }
 
-        [Column("bandera")]
-        public int? Bandera { get; set; }       
+        [Column("id_usuario_moodle")]
+        public int? IdUsuarioMoodle { get; set; }       
 
         [Column("codigo_aula")]
         public string CodigoAula { get; set; }
 
-        [Column("id_curso")]
-        public int? IdCurso { get; set; }
+        [Column("id_curso_moodle")]
+        public int? IdCursoMoodle { get; set; }
 
         [NotMapped]
         public bool Processed { get; set; }
